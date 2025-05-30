@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Run Upload</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="card">
+    <h1>The Tower Run Tracker</h1>
+    <div id="username" class="username-display">
+      <span>Username: </span><span id="usernameValue" style="font-weight:600;color:#b3e0ff;"></span>
+      <button id="logoutBtn" style="float:right; background:#ED4245; color:#fff; font-size:0.95em; border:none; border-radius:6px; padding:6px 14px; margin-left:10px; cursor:pointer;">Logout</button>
+    </div>
+    <div id="upload-section">
+      <label for="fileInput" class="custom-file-label">Select Screenshot</label>
+      <input type="file" id="fileInput" accept="image/*">
+      <div id="dropZone">Drop your screenshot here</div>
+      <button id="uploadBtn">Upload</button>
+      <div id="uploadStatus"></div>
+    </div>
+    <hr>
+    <div id="import-section">
+      <button id="importBtn">
+        <span style="display: flex; align-items: center;">
+          <svg style="margin-right:6px" width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M19 19H5V8H7V6H5C3.9 6 3 6.9 3 8V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V8C21 6.9 20.1 6 19 6H17V8H19V19ZM12 17L17 12H14V3H10V12H7L12 17Z"/></svg>
+          Import From
+          <span class="import-link">https://what-tier-should-i-farm.netlify.app</span>
+        </span>
+      </button>
+      <div id="importStatus"></div>
+    </div>
+
+    <!-- Add Run Manually Button -->
+    <div class="text-center mt-3">
+      <button id="openManualEntry" class="primary-btn">
+        <span class="mdi mdi-plus"></span> Add Run Manually
+      </button>
+    </div>
+
+    <!-- Manual Entry Dialog -->
+    <div id="manualEntryDialog" class="modal">
+      <div class="modal-content card">
+        <h2>Add Run Manually</h2>
+        <form id="manualEntryForm" autocomplete="off">
+          <div class="form-group">
+            <label>Tier</label>
+            <input type="number" name="tier" required />
+          </div>
+          <div class="form-group">
+            <label>Wave</label>
+            <input type="number" name="wave" required />
+          </div>
+          <div class="form-group">
+            <label>Duration</label>
+            <input type="text" name="duration" placeholder="e.g. 1h30m20s" required />
+          </div>
+          <div class="form-group">
+            <label>Coins</label>
+            <input type="text" name="coins" placeholder="e.g. 100K or 1.5M" required />
+          </div>
+          <div class="form-group">
+            <label>Cells</label>
+            <input type="text" name="cells" placeholder="e.g. 100K or 1.5M" required />
+          </div>
+          <div class="form-group">
+            <label>Reroll Shards</label>
+            <input type="text" name="rerollShards" placeholder="Enter number of shards" required />
+          </div>
+          <div class="form-group">
+            <label>Killed By</label>
+            <input type="text" name="killedBy" placeholder="Enter what killed you" required />
+          </div>
+          <div class="form-group">
+            <label>Note</label>
+            <input type="text" name="note" placeholder="Enter any additional notes" required />
+          </div>
+          <div class="form-group">
+            <label>Date Added</label>
+            <input type="date" name="date" required />
+          </div>
+          <div class="form-group">
+            <label>Time Added</label>
+            <input type="time" name="time" required />
+          </div>
+          <div class="form-group">
+            <label>Run Date</label>
+            <input type="date" name="runDate" required />
+          </div>
+          <div class="form-group">
+            <label>Run Time</label>
+            <input type="time" name="runTime" required />
+          </div>
+          <div class="form-group">
+            <label>Run Type</label>
+            <select name="type" required>
+              <option value="" disabled selected>Select type</option>
+              <option value="solo">Solo</option>
+              <option value="duo">Duo</option>
+              <option value="squad">Squad</option>
+              <!-- Add more types as needed -->
+            </select>
+          </div>
+          <div id="manualEntryError" style="color:#ED4245; min-height:1.5em; margin-bottom:8px;"></div>
+          <div class="modal-actions">
+            <button type="button" id="cancelManualEntry" class="secondary-btn">Cancel</button>
+            <button type="submit" class="primary-btn">Add Run</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

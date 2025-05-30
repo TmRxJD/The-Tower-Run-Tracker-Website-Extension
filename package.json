@@ -1,0 +1,14 @@
+{
+  "name": "tracker-extension",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build": "node esbuild.config.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "^0.20.0"
+  },
+  "dependencies": {
+    "appwrite": "^13.0.0"
+  }
+}

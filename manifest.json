@@ -1,0 +1,34 @@
+{
+  "manifest_version": 3,
+  "key": "fbfndkegmehegdjdkhcihbeobppbiook",
+  "name": "The Tower Run Tracker",
+  "version": "1.0",
+  "description": "Upload your game runs or import from old tracker.",
+  "permissions": ["storage", "identity"],
+  "host_permissions": [
+    "https://the-tower-run-tracker.com/*"
+  ],
+  "action": {
+    "default_popup": "login.html"
+  },
+  "background": {
+    "service_worker": "dist/background.js",
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://what-tier-should-i-farm.netlify.app/*"],
+      "js": ["content.js"]
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": [
+        "appwrite.js",
+        "env.js",
+        "authStore.js"
+      ],
+      "matches": ["<all_urls>"]
+    }
+  ]
+}
