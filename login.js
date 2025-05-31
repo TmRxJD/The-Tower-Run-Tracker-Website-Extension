@@ -46,10 +46,6 @@ document.addEventListener('DOMContentLoaded', () => {
           return;
         }
         if (response.success) {
-          const user = response.user;
-          const username = user.name || user.email || user.$id;
-          localStorage.setItem('tracker_username', username);
-          console.log('[login.js] User authenticated after OAuth:', username);
           window.location.href = 'popup.html';
         } else {
           statusDiv.textContent = 'Login failed: ' + (response.error || 'Unknown error');

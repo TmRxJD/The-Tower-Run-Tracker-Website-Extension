@@ -1,13 +1,18 @@
 // On load, check if user is authenticated; if not, redirect to login.html
-fetch('https://the-tower-run-tracker.vercel.app/api/me', {
-  credentials: 'include'
-})
+fetch('https://appwrite.the-tower-run-tracker.com/v1/account', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-Appwrite-Project': '68190de700097b8f59df'
+          },
+          credentials: 'include'
+        })
   .then(res => res.ok ? res.json() : Promise.reject())
   .then(user => {
     // User is authenticated, show username
     const usernameValue = document.getElementById('usernameValue');
-    if (usernameValue && user.username) {
-      usernameValue.textContent = user.username;
+    if (usernameValue && user.name) {
+      usernameValue.textContent = user.name;
     }
     // Continue with rest of popup logic
     mainPopupInit();
