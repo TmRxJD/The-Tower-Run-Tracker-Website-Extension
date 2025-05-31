@@ -33,10 +33,7 @@ async function main() {
   if (logoutBtn) {
     logoutBtn.addEventListener('click', async () => {
       try {
-        await fetch('https://the-tower-run-tracker.vercel.app/api/logout', {
-          method: 'POST',
-          credentials: 'include'
-        });
+        await account.deleteSession('current');
       } catch (err) {}
       window.location.href = 'login.html';
     });
