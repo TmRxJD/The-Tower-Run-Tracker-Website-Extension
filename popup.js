@@ -1,4 +1,20 @@
+
+
 const client = new Appwrite.Client()
+
+
+// --- Expandable Options Menu Logic ---
+document.addEventListener('DOMContentLoaded', function () {
+  const toggleOptionsMenu = document.getElementById('toggleOptionsMenu');
+  const optionsContent = document.getElementById('optionsContent');
+  if (toggleOptionsMenu && optionsContent) {
+    toggleOptionsMenu.addEventListener('click', function () {
+      const isOpen = optionsContent.style.display === 'block';
+      optionsContent.style.display = isOpen ? 'none' : 'block';
+      toggleOptionsMenu.innerHTML = isOpen ? 'Options &#9660;' : 'Options &#9650;';
+    });
+  }
+});
 
 client
     .setEndpoint(window.ENV.VITE_APPWRITE_ENDPOINT)
@@ -104,8 +120,20 @@ function mainPopupInit() {
   }
 
   let selectedFile = null;
+  async function runOcr(imageDataUrl) {
+    const { data: { text } } = await Tesseract.recognize(
+      imageDataUrl,
+      'eng',
+      {
+        langPath: chrome.runtime.getURL('assets/'),
+        corePath: chrome.runtime.getURL('assets/tesseract-core.wasm'),
+        logger: m => console.log(m)
+      }
+    );
+    return text;
+  }
 
-// Drag & Drop logic
+  // Drag & Drop logic with image preview and tesseract-wasm OCR
   dropZone.addEventListener('dragover', (e) => {
     e.preventDefault();
     dropZone.classList.add('dragover');
@@ -121,12 +149,66 @@ function mainPopupInit() {
     if (e.dataTransfer.files.length > 0) {
       selectedFile = e.dataTransfer.files[0];
       fileInput.files = e.dataTransfer.files;
+      if (selectedFile && selectedFile.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = async function (ev) {
+          // Show image preview
+          dropZone.innerHTML = `<img src="${ev.target.result}" alt="Screenshot Preview" style="max-width: 100%; max-height: 120px; display: block; margin: 0 auto; border-radius: 8px; box-shadow: 0 2px 8px #0002;" />`;
+          // OCR result container
+          let ocrDiv = document.createElement('div');
+          ocrDiv.className = 'ocr-result';
+          ocrDiv.style.marginTop = '8px';
+          ocrDiv.innerHTML = 'Processing OCR...';
+          dropZone.appendChild(ocrDiv);
+          try {
+            const text = await runOcr(ev.target.result);
+            if (text && text.trim()) {
+              ocrDiv.innerHTML = text.replace(/\n/g, '<br>');
+            } else {
+              ocrDiv.innerHTML = 'No text found.';
+            }
+          } catch (err) {
+            ocrDiv.innerHTML = 'OCR failed.';
+            console.error('OCR error (drop):', err);
+          }
+        };
+        reader.readAsDataURL(selectedFile);
+      } else {
+        dropZone.innerHTML = 'Drop your screenshot here';
+      }
     }
   });
 
-  // File selection
+  // File selection and image preview in drop zone with tesseract-wasm OCR
   fileInput.addEventListener('change', () => {
     selectedFile = fileInput.files[0];
+    if (selectedFile && selectedFile.type.startsWith('image/')) {
+      const reader = new FileReader();
+      reader.onload = async function (e) {
+        // Show image preview
+        dropZone.innerHTML = `<img src="${e.target.result}" alt="Screenshot Preview" style="max-width: 100%; max-height: 120px; display: block; margin: 0 auto; border-radius: 8px; box-shadow: 0 2px 8px #0002;" />`;
+        // OCR result container
+        let ocrDiv = document.createElement('div');
+        ocrDiv.className = 'ocr-result';
+        ocrDiv.style.marginTop = '8px';
+        ocrDiv.innerHTML = 'Processing OCR...';
+        dropZone.appendChild(ocrDiv);
+        try {
+          const text = await runOcr(e.target.result);
+          if (text && text.trim()) {
+            ocrDiv.innerHTML = text.replace(/\n/g, '<br>');
+          } else {
+            ocrDiv.innerHTML = 'No text found.';
+          }
+        } catch (err) {
+          ocrDiv.innerHTML = 'OCR failed.';
+          console.error('OCR error (file):', err);
+        }
+      };
+      reader.readAsDataURL(selectedFile);
+    } else {
+      dropZone.innerHTML = 'Drop your screenshot here';
+    }
   });
 
   // Upload logic
@@ -154,27 +236,7 @@ function mainPopupInit() {
     if (!selectedFile) {
       uploadStatus.textContent = '❌ No file selected.';
       return;
-    }
-
-    const formData = new FormData();
-    formData.append('screenshot', selectedFile);
-
-    try {
-      const response = await fetch('https://your-tracker.com/api/upload', {
-        method: 'POST',
-        body: formData,
-        credentials: 'include'
-      });
-
-      if (response.ok) {
-        uploadStatus.textContent = '✅ Screenshot uploaded!';
-      } else {
-        uploadStatus.textContent = '❌ Upload failed.';
-      }
-    } catch (err) {
-      uploadStatus.textContent = '❌ Error uploading.';
-      console.error(err);
-    }
+    }    
   });
 
   // Import old runs logic

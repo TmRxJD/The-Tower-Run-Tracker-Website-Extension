@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "key": "fbfndkegmehegdjdkhcihbeobppbiook",
+  "key": "kedanacfhdodpbnocmmjbmipkacmhbol",
   "name": "The Tower Run Tracker",
   "version": "1.0",
   "description": "Upload your game runs or import from old tracker.",
@@ -26,7 +26,11 @@
       "resources": [
         "appwrite.js",
         "env.js",
-        "authStore.js"
+        "authStore.js",
+        "assets/tesseract.min.js",
+        "assets/worker.min.js",
+        "assets/tesseract-core.wasm",
+        "assets/eng.traineddata"
       ],
       "matches": ["<all_urls>"]
     }
