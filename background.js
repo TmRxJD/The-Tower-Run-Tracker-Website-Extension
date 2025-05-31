@@ -1,4 +1,7 @@
-import { ENV } from './env.js';
+const env = {
+  VITE_APPWRITE_ENDPOINT: 'https://appwrite.the-tower-run-tracker.com/v1',
+  VITE_APPWRITE_PROJECT_ID: '68190de700097b8f59df',
+}
 
 // background.js (source, not bundled output)
 console.log('[background.js] Starting service worker...');
@@ -13,7 +16,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const extensionId = chrome.runtime.id;
     const redirectUri = `chrome-extension://${extensionId}/oauth2`;
     console.log('[background.js] Using redirectUri:', redirectUri);
-    const authUrl = `${ENV.VITE_APPWRITE_ENDPOINT.replace(/\/$/, '')}/account/sessions/oauth2/discord?project=${ENV.VITE_APPWRITE_PROJECT_ID}&success=${encodeURIComponent(redirectUri)}&failure=${encodeURIComponent(redirectUri)}`;
+    const authUrl = `${env.VITE_APPWRITE_ENDPOINT.replace(/\/$/, '')}/account/sessions/oauth2/discord?project=${env.VITE_APPWRITE_PROJECT_ID}&success=${encodeURIComponent(redirectUri)}&failure=${encodeURIComponent(redirectUri)}`;
     console.log('[background.js] Launching WebAuthFlow:', authUrl);
     chrome.identity.launchWebAuthFlow({
       url: authUrl,

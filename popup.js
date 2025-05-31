@@ -1,40 +1,49 @@
-// On load, check if user is authenticated; if not, redirect to login.html
-fetch('https://appwrite.the-tower-run-tracker.com/v1/account', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Appwrite-Project': '68190de700097b8f59df'
-          },
-          credentials: 'include'
-        })
-  .then(res => res.ok ? res.json() : Promise.reject())
-  .then(user => {
-    // User is authenticated, show username
-    const usernameValue = document.getElementById('usernameValue');
-    if (usernameValue && user.name) {
-      usernameValue.textContent = user.name;
-    }
-    // Continue with rest of popup logic
-    mainPopupInit();
+const client = new Appwrite.Client()
 
-    // Add logout button logic
-    const logoutBtn = document.getElementById('logoutBtn');
-    if (logoutBtn) {
-      logoutBtn.addEventListener('click', async () => {
-        try {
-          await fetch('https://the-tower-run-tracker.vercel.app/api/logout', {
-            method: 'POST',
-            credentials: 'include'
-          });
-        } catch (err) {}
-        window.location.href = 'login.html';
-      });
-    }
-  })
-  .catch(() => {
-    // Not authenticated, redirect to login page
+client
+    .setEndpoint(window.ENV.VITE_APPWRITE_ENDPOINT)
+    .setProject(window.ENV.VITE_APPWRITE_PROJECT_ID)
+
+const account = new Appwrite.Account(client)
+const databases = new Appwrite.Databases(client)
+let providerUid = null;
+
+async function main() {
+  // On load, check if user is authenticated; if not, redirect to login.html
+  const session = await account.getSession('current')
+
+  if (!session) {
     window.location.href = 'login.html';
-  });
+  }
+
+  providerUid = session.providerUid;
+
+
+  // User is authenticated, show username
+  const accountData = await account.get()
+  const usernameValue = document.getElementById('usernameValue');
+  if (usernameValue && accountData.name) {
+    usernameValue.textContent = accountData.name;
+  }
+  // Continue with rest of popup logic
+  mainPopupInit();
+
+  // Add logout button logic
+  const logoutBtn = document.getElementById('logoutBtn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', async () => {
+      try {
+        await fetch('https://the-tower-run-tracker.vercel.app/api/logout', {
+          method: 'POST',
+          credentials: 'include'
+        });
+      } catch (err) {}
+      window.location.href = 'login.html';
+    });
+  }
+}
+document.addEventListener('DOMContentLoaded', main);
+
 
 function mainPopupInit() {
   const fileInput = document.getElementById('fileInput');
@@ -125,6 +134,26 @@ function mainPopupInit() {
 
   // Upload logic
   uploadBtn.addEventListener('click', async () => {
+    await databases.createDocument(
+      'run-tracker-data',
+      `${providerUid}-runs`,
+      Appwrite.ID.unique(),
+      {
+        cells: '11K',
+        coins: '10T',
+        date: '2025-05-30',
+        duration: '10h31m20s',
+        killedBy: 'Boss',
+        note: 'Great run!',
+        rerollShards: '5K',
+        runDate: '2025-05-30',
+        runTime: '10:31:20',
+        tier: '10',
+        time: '10:31:20',
+        type: 'Farming',
+        wave: '7452'
+      }
+    );
     if (!selectedFile) {
       uploadStatus.textContent = '❌ No file selected.';
       return;
